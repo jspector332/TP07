@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="index">
+	<h1>Bienvenido a la página de inicio. Por favor, inicie sesión para continuar.</h1>
+
+	<form action='@Url.Action("Login", "Home")' method="get">
+		<button type="submit">Iniciar Sesion</button>
+	</form>
+
+	<h1>Si no tiene una cuenta, puede registrarse haciendo clic en el siguiente botón:</h1>
+
+	<form action='@Url.Action("Registro", "Home")' method="get">
+		<button type="submit">Registrarse</button>
+	</form>
+</div>

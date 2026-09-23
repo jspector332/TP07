@@ -1,0 +1,9 @@
+<div class="index-content">
+    <h1>Bienvenido, @ViewBag.UsuarioNombre</h1>
+
+    <h3>Recuerde cerrar sesión al finalizar su actividad.</h3>
+
+    <form action='@Url.Action("Logout", "Home")' method="get">
+        <button type="submit">Cerrar Sesión</button>
+    </form>
+</div>
