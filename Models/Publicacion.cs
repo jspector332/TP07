@@ -1,5 +1,5 @@
 namespace TP07.Models;
-public class Publicacion
+public class Publicaciones
 {
     public int Id { get; set; }
     public int IdUsuario { get; set; }

@@ -21,6 +21,97 @@ body {
   margin-bottom: 60px;
 }
 
+.home-page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.home-welcome h1 {
+  margin-bottom: 0.25rem;
+}
+
+.home-welcome h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #666;
+}
+
+.home-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.home-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 2rem;
+}
+
+.post-card {
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.post-body {
+  padding: 1rem 1rem 0.5rem 1rem;
+}
+
+.post-username {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.post-title {
+  font-weight: 600;
+  margin-top: 0.35rem;
+}
+
+.post-date {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.post-image-wrap {
+  background: #f3f3f3;
+}
+
+.post-image {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+}
+
+.post-description {
+  padding: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.home-empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  border: 1px dashed #ccc;
+  border-radius: 12px;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using TP07.Models;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace TP07.Controllers;
 
@@ -73,7 +74,10 @@ public class HomeController : Controller
             
             if(usuarioAView != null)
             { ViewBag.Usuario = usuarioAView; }
-            return View();
+
+            var publicaciones = bd.obtenerPublicaciones();
+            ViewBag.NombresUsuarios = bd.obtenerNombresUsuarios();
+            return View(publicaciones);
         }
         else
         {
@@ -87,11 +91,33 @@ public class HomeController : Controller
     }
     public IActionResult Publicar()
     {
+        ViewBag.UsuarioNombre = HttpContext.Session.GetString("Usuario");
+        ViewBag.FechaPublicacion = DateTime.Now;
         return View();
     }
-    public IActionResult AgregarPublicacion()
+    [HttpPost]
+    public IActionResult AgregarPublicacion(Publicaciones publicacion, IFormFile Imagen)
     {
-        
+        if (Imagen != null && Imagen.Length > 0)
+        {
+            string carpetaImagenes = Path.Combine(_environment.WebRootPath, "imagenes");
+            Directory.CreateDirectory(carpetaImagenes);
+
+            string extension = Path.GetExtension(Imagen.FileName);
+            string nombreArchivo = $"{Guid.NewGuid()}{extension}";
+            string rutaCompleta = Path.Combine(carpetaImagenes, nombreArchivo);
+
+            using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+            {
+                Imagen.CopyTo(stream);
+            }
+
+            publicacion.Imagen = $"/imagenes/{nombreArchivo}";
+        }
+
+        publicacion.FechaPublicacion = DateTime.Now;
+        bd.agregarPublicacion(publicacion);
+        return RedirectToAction("Home");
     }
 
     public IActionResult Privacy()

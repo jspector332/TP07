@@ -1,9 +1,67 @@
-<div class="index-content">
-    <h1>Bienvenido, @ViewBag.UsuarioNombre</h1>
+@model List<TP07.Models.Publicaciones>
 
-    <h3>Recuerde cerrar sesión al finalizar su actividad.</h3>
+<div class="home-page">
+    <div class="home-header">
+        <div class="home-welcome">
+            <h1>Bienvenido, @ViewBag.UsuarioNombre</h1>
+            <h3>Recuerde cerrar sesión al finalizar su actividad.</h3>
+        </div>
 
-    <form action='@Url.Action("Logout", "Home")' method="get">
-        <button type="submit">Cerrar Sesión</button>
-    </form>
+        <div class="home-actions">
+            <form action='@Url.Action("Publicar", "Home")' method="get">
+                <button type="submit" class="btn btn-primary">Agregar Publicación</button>
+            </form>
+
+            <form action='@Url.Action("Logout", "Home")' method="get">
+                <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="home-feed">
+        @if (Model != null && Model.Any())
+        {
+            var nombresUsuarios = ViewBag.NombresUsuarios as Dictionary<int, string>;
+
+            foreach (var publicacion in Model)
+            {
+                var srcImagen = string.IsNullOrWhiteSpace(publicacion.Imagen)
+                    ? null
+                    : (publicacion.Imagen.StartsWith("/") ? publicacion.Imagen : Url.Content($"~/imagenes/{publicacion.Imagen}"));
+                var nombreUsuario = nombresUsuarios != null && nombresUsuarios.ContainsKey(publicacion.IdUsuario)
+                    ? nombresUsuarios[publicacion.IdUsuario]
+                    : "Usuario desconocido";
+
+                <article class="post-card">
+                    <div class="post-body">
+                        <div class="post-username">@nombreUsuario</div>
+                        <div class="post-title">@publicacion.Titulo</div>
+                        <div class="post-date">@publicacion.FechaPublicacion.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(srcImagen))
+                    {
+                        <div class="post-image-wrap">
+                            <img class="post-image" src="@srcImagen" alt="@publicacion.Titulo" />
+                        </div>
+                    }
+
+                    <div class="post-description">
+                        @publicacion.Descripcion
+                    </div>
+
+                    <div class="post-actions">
+                        <button onclick="darLike(@publicacion.Id)" class="btn btn-like">Me gusta</button>
+                        <button onclick="comentar(@publicacion.Id)" class="btn btn-comment">Comentar</button>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <div class="home-empty-state">
+                No hay publicaciones para mostrar.
+            </div>
+        }
+    </div>
 </div>
