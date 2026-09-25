@@ -153,3 +153,184 @@ function validarFormularioLogin() {
         return true;
     }
 }
+
+function toggleLike(idPublicacion) {
+    fetch('/Home/ToggleLike', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ idPublicacion: idPublicacion })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.ok) {
+            alert(data.error || 'No se pudo procesar el Me Gusta.');
+            return;
+        }
+
+        const likeButton = document.getElementById('btn-like-' + idPublicacion);
+        const likesCount = document.getElementById('likes-count-' + idPublicacion);
+
+        if (likeButton) {
+            likeButton.innerText = data.liked ? 'Ya no me gusta' : 'Me gusta';
+        }
+
+        if (likesCount) {
+            likesCount.innerText = data.likesCount + ' Me gusta';
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Error de conexión al actualizar Me Gusta.');
+    });
+}
+
+function getComentarios(id){
+    fetch( '/Home/VerComentarios?id=' + id, {method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    })
+    .then(response => response.json())
+    .then(data => {
+        let body="";
+        data.forEach(item => {
+                body += item.texto + "<br>";
+            }); 
+            document.getElementById("comentario-" + id).innerHTML = body;
+        })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+let desdePublicaciones = 0;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('publicaciones-container');
+    if (!container) {
+        return;
+    }
+
+    const cantidadInicial = parseInt(container.getAttribute('data-cantidad-inicial') || '0');
+    desdePublicaciones = isNaN(cantidadInicial) ? 0 : cantidadInicial;
+});
+
+function cargarMasPublicaciones() {
+    const botonVerMas = document.getElementById('btn-ver-mas');
+    const container = document.getElementById('publicaciones-container');
+
+    if (!botonVerMas || !container) {
+        return;
+    }
+
+    botonVerMas.disabled = true;
+
+    fetch('/Publicacion/ObtenerMas?desde=' + desdePublicaciones, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.ok) {
+            alert(data.error || 'No se pudieron cargar más publicaciones.');
+            botonVerMas.disabled = false;
+            return;
+        }
+
+        if (Array.isArray(data.publicaciones)) {
+            data.publicaciones.forEach(publicacion => {
+                container.insertAdjacentHTML('beforeend', crearHtmlPublicacion(publicacion));
+            });
+        }
+
+        desdePublicaciones = data.siguienteDesde ?? desdePublicaciones;
+
+        if (!data.hayMas) {
+            botonVerMas.style.display = 'none';
+        } else {
+            botonVerMas.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error de conexión al cargar publicaciones.');
+        botonVerMas.disabled = false;
+    });
+}
+
+function crearHtmlPublicacion(publicacion) {
+    const id = publicacion.id;
+    const nombreUsuario = escapeHtml(publicacion.nombreUsuario || 'Usuario desconocido');
+    const titulo = escapeHtml(publicacion.titulo || '');
+    const descripcion = escapeHtml(publicacion.descripcion || '');
+    const fecha = formatearFecha(publicacion.fechaPublicacion);
+    const likes = Number.isInteger(publicacion.likesCount) ? publicacion.likesCount : 0;
+    const textoBotonLike = publicacion.usuarioDioLike ? 'Ya no me gusta' : 'Me gusta';
+    const imagen = publicacion.imagen;
+
+    let imagenHtml = '';
+    if (imagen && imagen.trim().length > 0) {
+        imagenHtml = `
+            <div class="post-image-wrap">
+                <img class="post-image" src="${escapeAttribute(imagen)}" alt="${titulo}" />
+            </div>`;
+    }
+
+    return `
+        <article class="post-card">
+            <div class="post-body">
+                <div class="post-username">${nombreUsuario}</div>
+                <div class="post-title">${titulo}</div>
+                <div class="post-date">${fecha}</div>
+            </div>
+            ${imagenHtml}
+            <div class="post-description">${descripcion}</div>
+            <div class="post-actions">
+                <button id="btn-like-${id}" onclick="toggleLike(${id})" class="btn btn-like">${textoBotonLike}</button>
+                <span id="likes-count-${id}">${likes} Me gusta</span>
+                <form action="/Home/Comentar" method="get">
+                    <button type="submit" class="btn btn-comment">Comentar</button>
+                    <input type="text" name="comentario" placeholder="Escribe un comentario..." required />
+                    <input type="hidden" name="idPublicacion" value="${id}" />
+                </form>
+            </div>
+            <div class="comentarios">
+                <button onclick="getComentarios(${id})" class="btn btn-comment">Ver Comentarios</button>
+                <h2 id="comentario-${id}"></h2>
+            </div>
+        </article>`;
+}
+
+function formatearFecha(fechaIso) {
+    const fecha = new Date(fechaIso);
+    if (Number.isNaN(fecha.getTime())) {
+        return '';
+    }
+
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    const horas = String(fecha.getHours()).padStart(2, '0');
+    const minutos = String(fecha.getMinutes()).padStart(2, '0');
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+}
+
+function escapeHtml(valor) {
+    return String(valor)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+function escapeAttribute(valor) {
+    return String(valor)
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+}

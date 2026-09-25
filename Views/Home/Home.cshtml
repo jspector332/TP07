@@ -19,9 +19,17 @@
     </div>
 
     <div class="home-feed">
+        @{ 
+            int cantidadInicialPublicaciones = ViewBag.CantidadInicialPublicaciones != null ? (int)ViewBag.CantidadInicialPublicaciones : 0;
+            bool hayMasPublicaciones = ViewBag.HayMasPublicaciones != null ? (bool)ViewBag.HayMasPublicaciones : false;
+        }
+
+        <div id="publicaciones-container" data-cantidad-inicial="@cantidadInicialPublicaciones">
         @if (Model != null && Model.Any())
         {
             var nombresUsuarios = ViewBag.NombresUsuarios as Dictionary<int, string>;
+            var likesPorPublicacion = ViewBag.LikesPorPublicacion as Dictionary<int, int>;
+            var publicacionesConLikeDelUsuario = ViewBag.PublicacionesConLikeDelUsuario as HashSet<int>;
 
             foreach (var publicacion in Model)
             {
@@ -31,6 +39,10 @@
                 var nombreUsuario = nombresUsuarios != null && nombresUsuarios.ContainsKey(publicacion.IdUsuario)
                     ? nombresUsuarios[publicacion.IdUsuario]
                     : "Usuario desconocido";
+                var likesActuales = likesPorPublicacion != null && likesPorPublicacion.ContainsKey(publicacion.Id)
+                    ? likesPorPublicacion[publicacion.Id]
+                    : 0;
+                var usuarioDioLike = publicacionesConLikeDelUsuario != null && publicacionesConLikeDelUsuario.Contains(publicacion.Id);
 
                 <article class="post-card">
                     <div class="post-body">
@@ -51,8 +63,18 @@
                     </div>
 
                     <div class="post-actions">
-                        <button onclick="darLike(@publicacion.Id)" class="btn btn-like">Me gusta</button>
-                        <button onclick="comentar(@publicacion.Id)" class="btn btn-comment">Comentar</button>
+                        <button id="btn-like-@publicacion.Id" onclick="toggleLike(@publicacion.Id)" class="btn btn-like">@(usuarioDioLike ? "Ya no me gusta" : "Me gusta")</button>
+                        <span id="likes-count-@publicacion.Id">@likesActuales Me gusta</span>
+                        <form action='@Url.Action("Comentar", "Home")' method="get">
+                            <button type="submit" onclick="comentar(@publicacion.Id)" class="btn btn-comment">Comentar</button>
+                            <input type="text" name="comentario" placeholder="Escribe un comentario..." required />
+                            <input type="hidden" name="idPublicacion" value="@publicacion.Id" />
+                        </form>
+                    </div>
+
+                    <div class="comentarios">
+                        <button onclick="getComentarios(@publicacion.Id)" class="btn btn-comment">Ver Comentarios</button>
+                        <h2 id="comentario-@publicacion.Id"></h2>
                     </div>
                 </article>
             }
@@ -63,5 +85,10 @@
                 No hay publicaciones para mostrar.
             </div>
         }
+        </div>
+
+        <div style="margin-top: 16px;">
+            <button id="btn-ver-mas" type="button" onclick="cargarMasPublicaciones()" class="btn btn-primary" style="display:@(hayMasPublicaciones ? "inline-block" : "none")">Ver más</button>
+        </div>
     </div>
 </div>
