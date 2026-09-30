@@ -1,37 +1,55 @@
-<form class="registro-form" action='@Url.Action("Verificar", "Home")' method="post" onsubmit="return validarFormulario()">
-    @if (ViewBag.Error != null)
-    {
-        <div style="color: red;">@ViewBag.Error</div>
-    }
-    <div class="form-row">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required />
+@{
+  ViewBag.LayoutBodyClass = "index-page";
+}
+
+<div class="auth-hero">
+  <div class="auth-card">
+    <div class="auth-side">
+      <div class="welcome">
+        <h1>Únete a la comunidad</h1>
+        <p>Comparte tus ideas y mantente en contacto con amigos.</p>
+      </div>
     </div>
-    <div id="fb-nombre"></div>
+    <div class="auth-form-area">
+      <h2>Registro</h2>
+      <p class="auth-note">Crea una cuenta para comenzar a publicar.</p>
 
-    <div class="form-row">
-        <label for="apellido">Apellido:</label>
-        <input type="text" id="apellido" name="apellido" required />
+      <form class="registro-form auth-form" action='@Url.Action("Verificar", "Home")' method="post" onsubmit="return validarFormulario()">
+        @if (ViewBag.Error != null)
+        {
+            <div style="color: red;">@ViewBag.Error</div>
+        }
+
+        <div class="form-row">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required />
+            <div id="fb-nombre"></div>
+        </div>
+
+        <div class="form-row">
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" name="apellido" required />
+            <div id="fb-apellido"></div>
+        </div>
+
+        <div class="form-row">
+            <label for="nombreUsuario">Nombre de Usuario</label>
+            <input type="text" id="nombreUsuario" name="nombreUsuario" required />
+            <div id="fb-nombreUsuario"></div>
+        </div>
+
+        <div class="form-row">
+            <label for="contrasenia">Contraseña</label>
+            <input type="password" id="contrasenia" name="Contraseña" required />
+            <div id="fb-contrasenia"></div>
+        </div>
+
+        <div id="divResultado"></div>
+        <div class="auth-actions">
+            <button type="submit" class="btn-modern" onclick="enviarFormulario()">Registrarse</button>
+            <button type="reset" class="btn-ghost">Limpiar</button>
+        </div>
+      </form>
     </div>
-    <div id="fb-apellido"></div>
-
-    <div class="form-row">
-        <label for="nombreUsuario">Nombre de Usuario:</label>
-        <input type="text" id="nombreUsuario" name="nombreUsuario" required />
-    </div>
-    <div id="fb-nombreUsuario"></div>
-
-    <div class="form-row">
-        <label for="contrasenia">Contraseña:</label>
-        <input type="password" id="contrasenia" name="Contraseña" required />
-    </div>
-    <div id="fb-contrasenia"></div>
-
-
-    <div id="divResultado"></div>
-    <div class="form-row buttons">
-        <button type="submit" onclick="enviarFormulario()">Registrarse</button>
-        <button type="reset">Limpiar</button>
-    </div>
-
-</form>
+  </div>
+</div>

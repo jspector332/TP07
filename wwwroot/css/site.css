@@ -17,13 +17,32 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+:root{
+  --bg-dark-1: #071025;
+  --bg-dark-2: #071233;
+  --surface: #0f1724;
+  --muted: #9aa3b2;
+  --text: #e6eef8;
+  --card: #0b1726;
+  --accent: #4f46e5;
+  --card-light: #ffffff;
+  --text-dark: #0b1220;
+}
+
+body{
+  margin:0 0 60px 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 100%);
+  color: var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-size:16px;
 }
 
 .home-page {
   max-width: 760px;
   margin: 0 auto;
+  padding-top: 1rem;
 }
 
 .home-header {
@@ -43,7 +62,7 @@ body {
   margin: 0;
   font-size: 1rem;
   font-weight: 400;
-  color: #666;
+  color: white;
 }
 
 .home-actions {
@@ -55,40 +74,47 @@ body {
 .home-feed {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding-bottom: 2rem;
+  gap: 1.5rem;
+  padding: 1.25rem 0 2.5rem 0;
 }
 
 .post-card {
-  border: 1px solid #ddd;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  background: var(--card-light); /* card white for high contrast */
+  color: var(--text-dark);
+  border: 1px solid rgba(2,6,23,0.06);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.12);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
+
+.post-card:hover{ transform: translateY(-3px); box-shadow: 0 16px 36px rgba(2,6,23,0.16); }
 
 .post-body {
   padding: 1rem 1rem 0.5rem 1rem;
+  border-bottom: 1px solid rgba(2,6,23,0.06);
 }
 
 .post-username {
   font-weight: 700;
   font-size: 1rem;
+  color: var(--text-dark);
 }
 
 .post-title {
-  font-weight: 600;
+  font-weight: 700;
   margin-top: 0.35rem;
+  color: var(--text-dark);
 }
 
 .post-date {
-  color: #666;
-  font-size: 0.9rem;
+  color: #6b7280;
+  font-size: 0.85rem;
   margin-top: 0.25rem;
 }
 
 .post-image-wrap {
-  background: #f3f3f3;
+  background: #f6f7fb;
 }
 
 .post-image {
@@ -102,14 +128,58 @@ body {
   padding: 1rem;
   line-height: 1.5;
   white-space: pre-wrap;
+  color: var(--text-dark);
+  background: transparent;
 }
+
+/* post actions area to separate controls from content */
+.post-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.75rem 1rem 1rem 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.006), rgba(255,255,255,0.004));
+  border-top: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Buttons inside white cards */
+.post-actions .btn-like {
+  background: transparent;
+  border: 1px solid rgba(2,6,23,0.08);
+  color: var(--text-dark);
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-weight:600;
+}
+.post-actions .btn-like:hover{ background: rgba(2,6,23,0.02); }
+
+.post-actions .btn-comment {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-weight:600;
+}
+.post-actions .btn-comment:hover{ filter:brightness(.95); }
+
+.post-actions input[type="text"]{
+  margin-left: 0.5rem;
+  flex: 1 1 auto;
+  border: 1px solid rgba(2,6,23,0.06);
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+}
+
+.likes-count{ color: #374151; font-weight:600; }
 
 .home-empty-state {
   padding: 2rem;
   text-align: center;
-  color: #666;
-  border: 1px dashed #ccc;
+  color: var(--muted);
+  border: 1px dashed rgba(2,6,23,0.06);
   border-radius: 12px;
+  background: rgba(255,255,255,0.02);
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -119,4 +189,197 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* Comentarios */
+.comentarios-list {
+  padding: 0 1rem 1rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.comentario-item {
+  margin-bottom: 0.45rem;
+}
+.comentario-usuario {
+  font-weight: 600;
+  margin-right: 0.35rem;
+  color:black;
+}
+.comentario-texto {
+  font-weight: 400;
+  color: black;
+}
+
+/* Modern index page styles */
+:root{
+  --bg-gradient-1: #0f172a; /* deep navy */
+  --bg-gradient-2: #07103a; /* darker */
+  --card-bg: #ffffff;
+  --accent: #4f46e5; /* indigo-600 */
+  --accent-2: #06b6d4; /* teal-400 */
+  --muted: #6b7280;
+}
+
+html,body{
+  height:100%;
+}
+body.index-page{
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 60%);
+  color: #111827;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Elevar la tarjeta del index moviéndola hacia arriba ligeramente */
+body.index-page .index-hero{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:3rem 1rem;
+}
+
+body.index-page .index-card{
+  width:100%;
+  max-width:920px;
+  background-color: white !important;
+  color: black !important;
+  border-radius:14px;
+  box-shadow: 0 12px 36px rgba(2,6,23,0.12);
+  display:grid;
+  grid-template-columns: 1fr 420px;
+  overflow:hidden;
+  margin-top: -48px; /* levantar la tarjeta */
+}
+
+.index-visual{
+  /* Make visual side match auth-side appearance */
+  background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(6,182,212,0.05));
+  padding:2rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.index-visual .welcome{
+  color: #0b1220; /* dark text like auth-side */
+  text-align:left;
+}
+.index-visual h1{
+  color: #0b1220;
+  font-size:2rem;
+  margin:0 0 0.5rem 0;
+}
+.index-visual p{ color: rgba(11,17,32,0.8); margin:0; }
+
+.index-actions{
+  padding:2rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.index-actions h2{
+  margin:0 0 1rem 0;
+  font-size:1.25rem;
+  color: #0b1220;
+}
+.index-actions p{ color: var(--muted); margin-bottom:1rem }
+
+.btn-modern{
+  display:inline-flex;
+  align-items:center;
+  gap:0.6rem;
+  padding:0.65rem 1rem;
+  border-radius:10px;
+  font-weight:600;
+  border:0;
+  cursor:pointer;
+  color:white;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 18px rgba(79,70,229,0.16);
+}
+.btn-ghost{
+  display:inline-flex;
+  align-items:center;
+  gap:0.6rem;
+  padding:0.5rem 0.9rem;
+  border-radius:10px;
+  font-weight:600;
+  border:1px solid rgba(11,20,32,0.06);
+  color: #0b1220;
+  background: white;
+}
+
+.index-cta-row{ display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap }
+
+@media (max-width: 900px){
+  .index-card{ grid-template-columns: 1fr; margin-top: 0; }
+  .index-visual{ padding:1.25rem; }
+  .index-actions{ padding:1.25rem; }
+}
+
+/* small tweaks to make buttons accessible when embedded in existing markup */
+button.btn-modern:focus, button.btn-ghost:focus{ outline: 3px solid rgba(99,102,241,0.18); outline-offset:3px }
+
+.welcome h1, .welcome p{
+  color: black;
+}
+
+/* Authentication forms (Registro / Login) */
+.auth-hero{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:2.25rem 1rem;
+}
+.auth-card{
+  width:100%;
+  max-width:760px;
+  background: #ffffff;
+  border-radius:12px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+  display:flex;
+  overflow:hidden;
+}
+.auth-side{
+  flex:1 1 45%;
+  background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(6,182,212,0.05));
+  padding:2rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.auth-side .welcome{ color:#0b1220 }
+.auth-form-area{
+  flex:1 1 55%;
+  padding:2rem;
+}
+.auth-form{
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+}
+.auth-form .form-row{ display:flex; flex-direction:column; }
+.auth-form label{ font-weight:600; margin-bottom:0.3rem; color:#0b1220 }
+.auth-form input[type="text"], .auth-form input[type="password"]{
+  padding:0.6rem 0.75rem;
+  border-radius:8px;
+  border:1px solid #e6e9ef;
+  font-size:0.95rem;
+}
+.auth-actions{ display:flex; gap:0.6rem; margin-top:0.6rem; align-items:center }
+.auth-note{ color:var(--muted); font-size:0.95rem }
+
+@media (max-width:720px){
+  .auth-card{ flex-direction:column }
+  .auth-side{ padding:1.25rem }
+  .auth-form-area{ padding:1.25rem }
+}
+
+.no-comments{
+  color: black;
+  font-style: italic;
+  font-size: 0.9rem;
 }

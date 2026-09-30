@@ -186,18 +186,36 @@ function toggleLike(idPublicacion) {
     });
 }
 
-function getComentarios(id){
+function getComentarios(id, btn){
+    const container = document.getElementById("comentario-" + id);
+    if (!container) return;
+
+    // Si ya tiene contenido, hacer toggle (cerrar)
+    if (container.innerHTML && container.innerHTML.trim().length > 0) {
+        container.innerHTML = "";
+        if (btn) btn.innerText = "Ver Comentarios";
+        return;
+    }
+
     fetch( '/Home/VerComentarios?id=' + id, {method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     })
     .then(response => response.json())
     .then(data => {
         let body="";
-        data.forEach(item => {
-                body += item.texto + "<br>";
-            }); 
-            document.getElementById("comentario-" + id).innerHTML = body;
-        })
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(item => {
+                const nombre = item.nombreUsuario || 'Usuario desconocido';
+                const texto = item.texto || '';
+                body += `<div class="comentario-item"><span class="comentario-usuario">${escapeHtml(nombre)}:</span> <span class="comentario-texto">${escapeHtml(texto)}</span></div>`;
+            });
+        } else {
+            body = `<div class="no-comments">No hay comentarios.</div>`;
+        }
+
+        container.innerHTML = body;
+        if (btn) btn.innerText = "Ocultar Comentarios";
+    })
     .catch((error) => {
         console.error('Error:', error);
     });
@@ -290,15 +308,14 @@ function crearHtmlPublicacion(publicacion) {
             <div class="post-actions">
                 <button id="btn-like-${id}" onclick="toggleLike(${id})" class="btn btn-like">${textoBotonLike}</button>
                 <span id="likes-count-${id}">${likes} Me gusta</span>
-                <form action="/Home/Comentar" method="get">
-                    <button type="submit" class="btn btn-comment">Comentar</button>
-                    <input type="text" name="comentario" placeholder="Escribe un comentario..." required />
-                    <input type="hidden" name="idPublicacion" value="${id}" />
-                </form>
+                <div class="comentario-form">
+                    <button type="button" onclick="comentarAjax(${id}, this)" class="btn btn-comment">Comentar</button>
+                    <input id="comentario-input-${id}" type="text" name="comentario" placeholder="Escribe un comentario..." required />
+                </div>
             </div>
             <div class="comentarios">
-                <button onclick="getComentarios(${id})" class="btn btn-comment">Ver Comentarios</button>
-                <h2 id="comentario-${id}"></h2>
+                <button onclick="getComentarios(${id}, this)" class="btn btn-comment">Ver Comentarios</button>
+                <div id="comentario-${id}" class="comentarios-list"></div>
             </div>
         </article>`;
 }
@@ -333,4 +350,56 @@ function escapeAttribute(valor) {
         .replaceAll("'", '&#39;')
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;');
+}
+
+function comentarAjax(id, btn){
+    const input = document.getElementById('comentario-input-' + id);
+    if (!input) return;
+
+    const texto = input.value.trim();
+    if (!texto) { alert('Escribe un comentario.'); return; }
+
+    btn.disabled = true;
+
+    fetch('/Home/ComentarAjax', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idPublicacion: id, comentario: texto })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.ok) {
+            alert(data.error || 'No se pudo publicar el comentario.');
+            return;
+        }
+
+        const article = btn.closest('article');
+        const cont = document.getElementById('comentario-' + id) || (article ? article.querySelector('.comentarios-list') : null);
+
+        const nombre = data.comentario.nombreUsuario || 'Usuario desconocido';
+        const textoC = data.comentario.texto || '';
+        const html = `<div class="comentario-item"><span class="comentario-usuario">${escapeHtml(nombre)}:</span> <span class="comentario-texto">${escapeHtml(textoC)}</span></div>`;
+
+        if (cont) {
+            // If previously showed "No hay comentarios.", remove that placeholder
+            const placeholder = cont.querySelector('.no-comments');
+            if (placeholder) placeholder.remove();
+            cont.insertAdjacentHTML('beforeend', html);
+        }
+
+        // Asegurar que el botón "Ver Comentarios" muestre que están visibles
+        if (article) {
+            const verBtn = article.querySelector('.comentarios button');
+            if (verBtn && verBtn.innerText.trim() === 'Ver Comentarios') {
+                verBtn.innerText = 'Ocultar Comentarios';
+            }
+        }
+
+        input.value = '';
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error de conexión al enviar comentario.');
+    })
+    .finally(() => { btn.disabled = false; });
 }

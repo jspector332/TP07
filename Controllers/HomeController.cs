@@ -18,7 +18,7 @@ public class HomeController : Controller
         _environment = environment;
     }
 
-        BD bd = new BD();
+    BD bd = new BD();
     public IActionResult Index()
     {
         return View();
@@ -219,9 +219,18 @@ public class HomeController : Controller
         return RedirectToAction("Home");
     }
 
-    public List<Comentarios> VerComentarios(int id)
+    public IActionResult VerComentarios(int id)
     {
-        return bd.GetComentarios(id);
+        var comentarios = bd.GetComentarios(id);
+        var nombresUsuarios = bd.obtenerNombresUsuarios();
+
+        var comentariosResp = comentarios.Select(c => new {
+            texto = c.Texto,
+            nombreUsuario = nombresUsuarios != null && nombresUsuarios.ContainsKey(c.IdUsuarioComenta) ? nombresUsuarios[c.IdUsuarioComenta] : "Usuario desconocido",
+            fecha = c.FechaComentario
+        }).ToList();
+
+        return Json(comentariosResp);
     }
 
     public IActionResult Comentar(int idPublicacion, string comentario)
@@ -243,6 +252,51 @@ public class HomeController : Controller
         {
             return RedirectToAction("Index");
         }
+    }
+
+    [HttpPost]
+    public JsonResult ComentarAjax([FromBody] ComentarRequest req)
+    {
+        string idUsuarioSession = HttpContext.Session.GetString("ID");
+        if (string.IsNullOrEmpty(idUsuarioSession))
+        {
+            Response.StatusCode = 401;
+            return Json(new { ok = false, error = "Usuario no autenticado." });
+        }
+
+        if (req == null || req.IdPublicacion <= 0 || string.IsNullOrWhiteSpace(req.Comentario))
+        {
+            Response.StatusCode = 400;
+            return Json(new { ok = false, error = "Parámetros inválidos." });
+        }
+
+        Comentarios nuevoComentario = new Comentarios
+        {
+            IdPublicacion = req.IdPublicacion,
+            IdUsuarioComenta = int.Parse(idUsuarioSession),
+            Texto = req.Comentario,
+            FechaComentario = DateTime.Now
+        };
+
+        bd.agregarComentario(nuevoComentario);
+
+        var nombresUsuarios = bd.obtenerNombresUsuarios();
+        var nombreUsuario = nombresUsuarios != null && nombresUsuarios.ContainsKey(nuevoComentario.IdUsuarioComenta) ? nombresUsuarios[nuevoComentario.IdUsuarioComenta] : "Usuario desconocido";
+
+        return Json(new {
+            ok = true,
+            comentario = new {
+                texto = nuevoComentario.Texto,
+                nombreUsuario = nombreUsuario,
+                fecha = nuevoComentario.FechaComentario
+            }
+        });
+    }
+
+    public class ComentarRequest
+    {
+        public int IdPublicacion { get; set; }
+        public string Comentario { get; set; }
     }
 
     public IActionResult Privacy()

@@ -1,16 +1,43 @@
-<form action='@Url.Action("VerificarLogin", "Home")' method="post" onsubmit="return validarFormularioLogin()">
-    @if (ViewBag.Error != null)
-    {
-        <div style="color: red;">@ViewBag.Error</div>
-    }
-    <label for="nombreUsuario">Nombre de Usuario:</label>
-    <input type="text" id="nombreUsuarioLogin" name="nombreUsuario" required><br><br>
-    <div id="fb-nombreusuariologin"></div>
+@{
+    ViewBag.LayoutBodyClass = "index-page";
+}
 
-    <label for="contrasenia">Contraseña:</label>
-    <input type="password" id="contraseniaLogin" name="Contraseña" required><br><br>
-    <div id="fb-contlogin"></div>
-<div id="divResultadoLogin"></div>
-<button type="submit" onclick="enviarFormLogin()">Iniciar Sesión</button>
-<button type="reset">Limpiar</button>
-</form>
+<div class="auth-hero">
+    <div class="auth-card">
+        <div class="auth-side">
+            <div class="welcome">
+                <h1>Bienvenido de nuevo</h1>
+                <p>Ingresa para ver las publicaciones de tus amigos.</p>
+            </div>
+        </div>
+        <div class="auth-form-area">
+            <h2>Iniciar sesión</h2>
+            <p class="auth-note">Introduce tus credenciales para continuar.</p>
+
+            <form class="auth-form" action='@Url.Action("VerificarLogin", "Home")' method="post" onsubmit="return validarFormularioLogin()">
+                @if (ViewBag.Error != null)
+                {
+                        <div style="color: red;">@ViewBag.Error</div>
+                }
+
+                <div class="form-row">
+                    <label for="nombreUsuario">Nombre de Usuario</label>
+                    <input type="text" id="nombreUsuarioLogin" name="nombreUsuario" required />
+                    <div id="fb-nombreusuariologin"></div>
+                </div>
+
+                <div class="form-row">
+                    <label for="contrasenia">Contraseña</label>
+                    <input type="password" id="contraseniaLogin" name="Contraseña" required />
+                    <div id="fb-contlogin"></div>
+                </div>
+
+                <div id="divResultadoLogin"></div>
+                <div class="auth-actions">
+                    <button type="submit" class="btn-modern" onclick="enviarFormLogin()">Iniciar Sesión</button>
+                    <button type="reset" class="btn-ghost">Limpiar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

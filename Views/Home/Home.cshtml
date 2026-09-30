@@ -65,16 +65,15 @@
                     <div class="post-actions">
                         <button id="btn-like-@publicacion.Id" onclick="toggleLike(@publicacion.Id)" class="btn btn-like">@(usuarioDioLike ? "Ya no me gusta" : "Me gusta")</button>
                         <span id="likes-count-@publicacion.Id">@likesActuales Me gusta</span>
-                        <form action='@Url.Action("Comentar", "Home")' method="get">
-                            <button type="submit" onclick="comentar(@publicacion.Id)" class="btn btn-comment">Comentar</button>
-                            <input type="text" name="comentario" placeholder="Escribe un comentario..." required />
-                            <input type="hidden" name="idPublicacion" value="@publicacion.Id" />
-                        </form>
+                        <div class="comentario-form">
+                            <button type="button" onclick="comentarAjax(@publicacion.Id, this)" class="btn btn-comment">Comentar</button>
+                            <input id="comentario-input-@publicacion.Id" type="text" name="comentario" placeholder="Escribe un comentario..." required />
+                        </div>
                     </div>
 
                     <div class="comentarios">
-                        <button onclick="getComentarios(@publicacion.Id)" class="btn btn-comment">Ver Comentarios</button>
-                        <h2 id="comentario-@publicacion.Id"></h2>
+                        <button onclick="getComentarios(@publicacion.Id, this)" class="btn btn-comment">Ver Comentarios</button>
+                        <div id="comentario-@publicacion.Id" class="comentarios-list"></div>
                     </div>
                 </article>
             }
