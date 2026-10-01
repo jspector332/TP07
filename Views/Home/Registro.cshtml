@@ -48,7 +48,9 @@
         <div class="auth-actions">
             <button type="submit" class="btn-modern" onclick="enviarFormulario()">Registrarse</button>
             <button type="reset" class="btn-ghost">Limpiar</button>
+            <button class="btn-ghost"><a href="@Url.Action("Index", "Home")">Volver</a></button>
         </div>
+        <p class="auth-note">¿Ya tienes una cuenta? <a href="@Url.Action("Login", "Home")">Inicia sesión aquí</a></p>
       </form>
     </div>
   </div>

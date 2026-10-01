@@ -188,6 +188,7 @@ public class HomeController : Controller
         HttpContext.Session.Clear();
         return RedirectToAction("Index");
     }
+    [HttpPost]
     public IActionResult Publicar()
     {
         ViewBag.UsuarioNombre = HttpContext.Session.GetString("Usuario");
